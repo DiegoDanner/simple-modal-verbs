@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.font-mono-code {
+  font-family: "JetBrains Mono", monospace;
+}
+
+.modal-tag {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.35rem;
+  background-color: #fef08a;
+  color: #854d0e;
+  font-weight: 700;
+}
+
+.dark .modal-tag {
+  background-color: #854d0e;
+  color: #fef9c3;
+}
+
+@keyframes step-appear {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
