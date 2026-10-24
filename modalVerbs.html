@@ -527,6 +527,21 @@
     let activeFilter = 'all';
     let currentLearningStep = 0;
 
+    function shuffleQuizOptions(options, correct) {
+      const shuffled = [...options];
+      for (let index = shuffled.length - 1; index > 0; index--) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+
+      if (shuffled[0].toLowerCase() === correct.toLowerCase()) {
+        const swapIndex = 1 + Math.floor(Math.random() * (shuffled.length - 1));
+        [shuffled[0], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[0]];
+      }
+
+      return shuffled;
+    }
+
     function setLearningStep(step) {
       const steps = Array.from(document.querySelectorAll('[data-learning-step]'));
       const nextStep = Math.max(0, Math.min(step, steps.length - 1));
@@ -763,7 +778,7 @@
       feedback.innerText = "";
 
       const optionsContainer = document.getElementById('quizOptions');
-      optionsContainer.innerHTML = q.options.map(opt => `
+      optionsContainer.innerHTML = shuffleQuizOptions(q.options, q.correct).map(opt => `
         <button onclick="handleQuizAnswer('${opt}')" class="quiz-btn py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold font-mono text-sm transition active:scale-95">
           ${opt}
         </button>
