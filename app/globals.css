@@ -43,3 +43,33 @@ body {
     transform: translateY(0);
   }
 }
+
+.quiz-confetti {
+  position: absolute;
+  width: 0.55rem;
+  height: 1rem;
+  border-radius: 2px;
+  animation: quiz-confetti-fall 3s cubic-bezier(0.15, 0.7, 0.35, 1) forwards;
+}
+
+@keyframes quiz-confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+
+  15% {
+    transform: translate3d(var(--confetti-drift), -5rem, 0) rotate(180deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--confetti-drift) * 1.7), 100vh, 0) rotate(var(--confetti-rotation));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-confetti {
+    display: none;
+  }
+}

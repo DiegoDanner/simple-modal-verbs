@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { builderData, quizQuestions, simpleModals } from "@/data/modal-verbs";
 
 type BuilderVerb = (typeof builderData.verbs)[number];
 type FilterPurpose = "all" | "Ability" | "Permission" | "Advice" | "Rule / Must" | "Possibility";
+type ConfettiPiece = {
+  left: number;
+  top: number;
+  drift: number;
+  rotation: number;
+  delay: number;
+  color: string;
+};
 
 const purposes: { label: string; value: FilterPurpose }[] = [
   { label: "All", value: "all" },
@@ -26,6 +34,7 @@ const learningSteps = [
   { title: "Modal Directory", icon: "fa-book-open" },
   { title: "Quick Quiz", icon: "fa-gamepad" },
 ];
+const confettiColors = ["#0ea5e9", "#6366f1", "#a855f7", "#f43f5e", "#f59e0b", "#10b981"];
 
 function shuffleOptions(options: string[], correct: string, seed: number) {
   const shuffled = [...options];
@@ -75,8 +84,29 @@ export default function Home() {
   const [answer, setAnswer] = useState<string | null>(null);
   const [quizFinished, setQuizFinished] = useState(false);
   const [quizRound, setQuizRound] = useState(0);
+  const [confettiPieces, setConfettiPieces] = useState<ConfettiPiece[]>([]);
   const [toast, setToast] = useState("");
   const voiceNoticeShown = useRef(false);
+
+  useEffect(() => {
+    if (!quizFinished || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setConfettiPieces([]);
+      return;
+    }
+
+    setConfettiPieces(
+      Array.from({ length: 90 }, () => ({
+        left: 35 + Math.random() * 30,
+        top: 20 + Math.random() * 20,
+        drift: (Math.random() - 0.5) * 400,
+        rotation: 360 + Math.random() * 1080,
+        delay: Math.random() * 250,
+        color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+      })),
+    );
+    const timeout = window.setTimeout(() => setConfettiPieces([]), 3500);
+    return () => window.clearTimeout(timeout);
+  }, [quizFinished]);
 
   const question = quizQuestions[quizIndex];
   const shuffledOptions = useMemo(
@@ -212,6 +242,21 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
+      {confettiPieces.length > 0 && (
+        <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+          {confettiPieces.map((piece, index) => {
+            const style: CSSProperties & { "--confetti-drift": string; "--confetti-rotation": string } = {
+              left: `${piece.left}%`,
+              top: `${piece.top}%`,
+              backgroundColor: piece.color,
+              animationDelay: `${piece.delay}ms`,
+              "--confetti-drift": `${piece.drift}px`,
+              "--confetti-rotation": `${piece.rotation}deg`,
+            };
+            return <span key={index} className="quiz-confetti" style={style} />;
+          })}
+        </div>
+      )}
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3.5">
           <div className="flex items-center gap-3">
